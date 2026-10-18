@@ -1,0 +1,9 @@
+{% with pct=campanha.percentual_atingido %}
+<div class="progress mb-2" role="progressbar" aria-label="Progresso da vaquinha" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-bar bg-primary" style="width: {{ pct }}%"></div>
+</div>
+<p class="small text-secondary mb-0">
+    <strong class="text-body">R$ {{ campanha.valor_arrecadado|floatformat:"2g" }}</strong>
+    arrecadados de R$ {{ campanha.meta_valor|floatformat:"2g" }} ({{ pct }}%)
+</p>
+{% endwith %}

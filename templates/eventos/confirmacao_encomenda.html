@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Encomenda {{ encomenda.numero }} - Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="text-center">
+                <i class="bi bi-basket-fill text-primary icone-status"></i>
+                <h1 class="mt-3">Encomenda anotada!</h1>
+                <p class="text-secondary">
+                    Encomenda <strong>{{ encomenda.numero }}</strong> em nome de {{ encomenda.nome }} para
+                    <a href="{% url 'eventos:detalhe' encomenda.evento.slug %}">{{ encomenda.evento.titulo }}</a>,
+                    {{ encomenda.evento.data|date:"l, d/m" }}{% if encomenda.evento.hora_inicio %} às {{ encomenda.evento.hora_inicio|time:"H\hi" }}{% endif %}.
+                </p>
+            </div>
+
+            <div class="card shadow-sm my-4">
+                <ul class="list-group list-group-flush">
+                    {% for item in encomenda.itens.all %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ item.quantidade }}× {{ item.nome }}</span>
+                        <span>R$ {{ item.subtotal|floatformat:"2g" }}</span>
+                    </li>
+                    {% endfor %}
+                    <li class="list-group-item d-flex justify-content-between fs-5">
+                        <strong>Total</strong>
+                        <strong class="text-primary">R$ {{ encomenda.total|floatformat:"2g" }}</strong>
+                    </li>
+                </ul>
+                {% if encomenda.observacao %}
+                <div class="card-footer small text-secondary">Obs: {{ encomenda.observacao }}</div>
+                {% endif %}
+            </div>
+
+            {% if encomenda.status == 'cancelada' %}
+            <div class="alert alert-secondary text-center">Esta encomenda foi cancelada.</div>
+            {% else %}
+            <p class="fw-semibold text-center">Último passo: envie a encomenda para a ONG e combine o pagamento.</p>
+            {% include '_botao_whatsapp.html' with mensagem=encomenda.mensagem_whatsapp %}
+            {% endif %}
+
+            <div class="text-center">
+                <a href="{% url 'eventos:lista' %}" class="btn btn-link mt-3">Ver outros eventos</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Eventos - Resgata Rurópolis{% endblock %}
+{% block description %}Feijoadas, bolos e encontros beneficentes da Resgata Rurópolis. Encomende antes e ajude os animais.{% endblock %}
+
+{% block content %}
+<section class="hero py-5">
+    <div class="container text-center py-3">
+        <h1 class="display-6 fw-bold"><i class="bi bi-calendar-heart"></i> Eventos</h1>
+        <p class="lead mb-0 col-lg-8 mx-auto">Comidas e encontros em datas especiais. Encomende antes para garantir o seu. Toda a renda vai para os animais.</p>
+    </div>
+</section>
+
+<section class="container py-5">
+    {% if eventos %}
+    <div class="row g-4">
+        {% for evento in eventos %}
+            {% include 'eventos/_card.html' %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+        <i class="bi bi-calendar-x text-secondary icone-status"></i>
+        <p class="text-secondary mt-3">Nenhum evento marcado no momento. Fique de olho nas nossas redes sociais!</p>
+        <a href="{% url 'bazar:lista' %}" class="btn btn-outline-primary">Enquanto isso, conheça nosso bazar</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

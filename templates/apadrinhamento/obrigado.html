@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Obrigado! - Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <i class="bi bi-check-circle-fill text-primary icone-status"></i>
+    <h1 class="mt-3">Muito obrigado por apadrinhar!</h1>
+    {% if apadrinhamento and apadrinhamento.status == 'ativo' %}
+    <p class="text-secondary col-md-6 mx-auto">
+        {{ apadrinhamento.nome_padrinho }}, agora você é padrinho/madrinha de
+        <a href="{% url 'animais:detalhe' apadrinhamento.animal.slug %}">{{ apadrinhamento.animal.nome }}</a>
+        com <strong>R$ {{ apadrinhamento.valor_mensal|floatformat:"2g" }}/mês</strong>. Você faz parte da rede de proteção da Resgata Rurópolis.
+    </p>
+    {% else %}
+    <p class="text-secondary col-md-6 mx-auto">Assim que a assinatura for confirmada pelo Mercado Pago, seu apadrinhamento será ativado. Você faz parte da rede de proteção da Resgata Rurópolis.</p>
+    {% endif %}
+    <a href="{% url 'core:home' %}" class="btn btn-primary mt-3">Voltar ao início</a>
+</div>
+{% endblock %}

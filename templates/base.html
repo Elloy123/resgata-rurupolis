@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Resgata Rurópolis{% endblock %}</title>
+    <meta name="description" content="{% block description %}Resgata Rurópolis: ONG de resgate, cuidado e adoção responsável de animais em Rurópolis-PA. Adote, apadrinhe ou doe.{% endblock %}">
+    <meta name="theme-color" content="#c2410c">
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/logo-192.png' %}">
+    <meta property="og:site_name" content="Resgata Rurópolis">
+    <meta property="og:title" content="{% block og_title %}Resgata Rurópolis{% endblock %}">
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{% static 'css/site.css' %}" rel="stylesheet">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{% url 'core:home' %}">
+                <img src="{% static 'img/logo-96.png' %}" alt="" width="44" height="44" class="logo-menu">
+                Resgata Rurópolis
+            </a>
+            <a href="{% url 'bazar:carrinho' %}" class="btn btn-carrinho position-relative ms-auto me-2 me-lg-0 ms-lg-3 order-lg-last"
+               aria-label="Carrinho do bazar{% if carrinho_qtd %}: {{ carrinho_qtd }} item(ns){% endif %}">
+                <i class="bi bi-cart3"></i>
+                {% if carrinho_qtd %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ carrinho_qtd }}</span>
+                {% endif %}
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'core:home' %}">Início</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'animais:lista' %}">Animais para adoção</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'apadrinhamento:lista' %}">Apadrinhamento</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'doacoes:lista' %}">Vaquinhas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'eventos:lista' %}">Eventos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'bazar:lista' %}">Bazar</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'core:telefones' %}">Telefones úteis</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'core:sobre' %}">Sobre</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="rodape text-light mt-5 pt-5 pb-4">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="{% static 'img/logo-192.png' %}" alt="Logo Resgata Rurópolis" width="80" height="80">
+                        <div>
+                            <h5 class="mb-0">Resgata Rurópolis</h5>
+                            <small class="fst-italic text-secondary">Resgatar é um ato de amor</small>
+                        </div>
+                    </div>
+                    <p class="text-secondary">ONG dedicada ao resgate, cuidado e adoção responsável de animais em Rurópolis-PA.</p>
+                    <div>
+                        {% if sobre_ong.facebook %}<a href="{{ sobre_ong.facebook }}" class="text-light me-3" target="_blank" rel="noopener"><i class="bi bi-facebook fs-5"></i></a>{% endif %}
+                        {% if sobre_ong.instagram %}<a href="{{ sobre_ong.instagram }}" class="text-light" target="_blank" rel="noopener"><i class="bi bi-instagram fs-5"></i></a>{% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contato</h5>
+                    <ul class="list-unstyled text-secondary">
+                        {% if sobre_ong.telefone_contato %}<li><i class="bi bi-telephone"></i> {{ sobre_ong.telefone_contato }}</li>{% endif %}
+                        {% if sobre_ong.whatsapp_contato %}<li><i class="bi bi-whatsapp"></i> {{ sobre_ong.whatsapp_contato }}</li>{% endif %}
+                        {% if sobre_ong.email_contato %}<li><i class="bi bi-envelope"></i> {{ sobre_ong.email_contato }}</li>{% endif %}
+                        {% if sobre_ong.endereco %}<li><i class="bi bi-geo-alt"></i> {{ sobre_ong.endereco }}</li>{% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Ajude a Resgata Rurópolis</h5>
+                    <p class="text-secondary">Adote, apadrinhe ou contribua com uma vaquinha. Cada ajuda transforma uma vida.</p>
+                    <a href="{% url 'doacoes:lista' %}" class="btn btn-danger btn-sm">Quero ajudar</a>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <p class="text-center text-secondary mb-0 small">&copy; {% now "Y" %} Resgata Rurópolis. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/site.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

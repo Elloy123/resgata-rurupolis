@@ -1,0 +1,29 @@
+{% comment %}Card de produto do bazar, no mesmo formato do card dos animais. Parâmetro: produto.{% endcomment %}
+<div class="col-sm-6 col-lg-3">
+    <div class="card card-animal card-produto h-100 shadow-sm">
+        <a href="{% url 'bazar:produto' produto.slug %}" class="position-relative d-block">
+            {% if produto.foto %}
+            <img src="{{ produto.foto.url }}" class="card-img-top" alt="{{ produto.nome }}" loading="lazy">
+            {% else %}
+            <img src="https://placehold.co/400x300?text={{ produto.nome|urlencode }}" class="card-img-top" alt="{{ produto.nome }} (sem foto)" loading="lazy">
+            {% endif %}
+            <span class="etiqueta-preco shadow-sm">R$ {{ produto.preco|floatformat:"2g" }}</span>
+        </a>
+        <div class="card-body d-flex flex-column">
+            <h5 class="card-title mb-1">
+                <a href="{% url 'bazar:produto' produto.slug %}" class="link-body-emphasis text-decoration-none">{{ produto.nome }}</a>
+            </h5>
+            <p class="card-text text-secondary small flex-grow-1">
+                {{ produto.get_categoria_display }}{% if produto.tamanho %} &middot; Tam. {{ produto.tamanho }}{% endif %}{% if produto.estado %} &middot; {{ produto.estado }}{% endif %}
+                {% if produto.estoque == 1 %}<br><span class="text-danger fw-semibold">Peça única</span>{% elif produto.estoque <= 3 %}<br><span class="text-danger fw-semibold">Últimas {{ produto.estoque }} unidades</span>{% endif %}
+            </p>
+            <form method="post" action="{% url 'bazar:adicionar' produto.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" class="btn btn-primary btn-sm w-100">
+                    <i class="bi bi-cart-plus"></i> Adicionar ao carrinho
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

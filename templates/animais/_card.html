@@ -1,0 +1,26 @@
+{% comment %}
+Card de animal reutilizado nas listagens.
+Parâmetros: animal, url (link do botão), texto_botao.
+{% endcomment %}
+<div class="col-sm-6 col-lg-3">
+    <div class="card card-animal h-100 shadow-sm">
+        {% if animal.foto %}
+        <img src="{{ animal.foto.url }}" class="card-img-top" alt="Foto de {{ animal.nome }}" loading="lazy">
+        {% else %}
+        <img src="https://placehold.co/400x300?text={{ animal.nome|urlencode }}" class="card-img-top" alt="{{ animal.nome }} (sem foto)" loading="lazy">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+                <h5 class="card-title">{{ animal.nome }}</h5>
+                {% if animal.status == 'em_tratamento' %}
+                <span class="badge badge-status text-bg-warning">Em tratamento</span>
+                {% endif %}
+            </div>
+            <p class="card-text text-secondary small flex-grow-1">
+                {{ animal.get_especie_display }} &middot; {{ animal.get_porte_display }} &middot; {{ animal.get_sexo_display }}
+                {% if animal.idade_aproximada %} &middot; {{ animal.idade_aproximada }}{% endif %}
+            </p>
+            <a href="{{ url }}" class="btn btn-primary btn-sm stretched-link">{{ texto_botao }}</a>
+        </div>
+    </div>
+</div>

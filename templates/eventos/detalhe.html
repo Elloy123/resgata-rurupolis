@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ evento.titulo }} - Resgata Rurópolis{% endblock %}
+{% block description %}{{ evento.titulo }} em {{ evento.data|date:"d/m/Y" }}{% if evento.local %}, {{ evento.local }}{% endif %}. Evento beneficente da Resgata Rurópolis.{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'eventos:lista' %}">Eventos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ evento.titulo }}</li>
+        </ol>
+    </nav>
+    <div class="row g-4">
+        <div class="col-lg-6">
+            {% if evento.imagem %}
+            <img src="{{ evento.imagem.url }}" class="img-fluid rounded shadow-sm w-100 mb-3" alt="{{ evento.titulo }}">
+            {% endif %}
+            <h1>{{ evento.titulo }}</h1>
+            <ul class="list-unstyled fs-5">
+                <li><i class="bi bi-calendar-event text-primary"></i> {{ evento.data|date:"l, d \d\e F \d\e Y"|capfirst }}</li>
+                {% if evento.hora_inicio %}
+                <li><i class="bi bi-clock text-primary"></i> {{ evento.hora_inicio|time:"H\hi" }}{% if evento.hora_fim %} às {{ evento.hora_fim|time:"H\hi" }}{% endif %}</li>
+                {% endif %}
+                {% if evento.local %}<li><i class="bi bi-geo-alt text-primary"></i> {{ evento.local }}</li>{% endif %}
+            </ul>
+            {% if evento.ja_passou %}
+            <div class="alert alert-secondary">Este evento já aconteceu. Obrigado a todos que participaram!</div>
+            {% endif %}
+            {% if evento.descricao %}<p style="white-space: pre-line;">{{ evento.descricao }}</p>{% endif %}
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4 card-title"><i class="bi bi-egg-fried text-primary"></i> Cardápio</h2>
+
+                    {% if not itens and not itens_esgotados %}
+                    <p class="text-secondary mb-0">O cardápio será divulgado em breve.</p>
+                    {% elif evento.encomendas_abertas and itens %}
+                    <p class="small text-secondary">Escolha as quantidades e encomende antes para garantir. O pagamento é combinado com a ONG pelo WhatsApp (Pix ou na retirada).</p>
+                    <form method="post" class="form-encomenda">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}<div class="alert alert-danger py-2">{{ form.non_field_errors|striptags }}</div>{% endif %}
+                        <ul class="list-group list-group-flush mb-3">
+                            {% for item, campo in form.linhas_cardapio %}
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center gap-3">
+                                <div>
+                                    <div class="fw-semibold">{{ item.nome }}</div>
+                                    {% if item.descricao %}<div class="small text-secondary">{{ item.descricao }}</div>{% endif %}
+                                    <div class="text-primary fw-bold">R$ {{ item.preco|floatformat:"2g" }}</div>
+                                </div>
+                                <div class="input-group input-group-sm seletor-qtd">
+                                    <button class="btn btn-outline-primary" type="button" data-qtd="-1" aria-label="Diminuir {{ item.nome }}">−</button>
+                                    {{ campo }}
+                                    <button class="btn btn-outline-primary" type="button" data-qtd="1" aria-label="Aumentar {{ item.nome }}">+</button>
+                                </div>
+                            </li>
+                            {% if campo.errors %}<li class="list-group-item px-0 border-0 pt-0"><div class="invalid-feedback d-block">{{ campo.errors|striptags }}</div></li>{% endif %}
+                            {% endfor %}
+                            {% for item in itens_esgotados %}
+                            <li class="list-group-item px-0 d-flex justify-content-between text-secondary">
+                                <span><s>{{ item.nome }}</s></span><span class="badge text-bg-dark">Esgotado</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="d-flex justify-content-between align-items-center fs-5 mb-3 border-top pt-3">
+                            <span>Total</span>
+                            <strong class="text-primary" id="total-encomenda">R$ 0,00</strong>
+                        </div>
+                        {% for campo in form.campos_contato %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}{% if campo.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}</label>
+                            {{ campo }}
+                            {% if campo.errors %}<div class="invalid-feedback d-block">{{ campo.errors|striptags }}</div>{% endif %}
+                        </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-basket"></i> Fazer encomenda</button>
+                    </form>
+                    {% else %}
+                    <ul class="list-group list-group-flush">
+                        {% for item in itens %}
+                        <li class="list-group-item px-0 d-flex justify-content-between">
+                            <span>{{ item.nome }}{% if item.descricao %}<br><small class="text-secondary">{{ item.descricao }}</small>{% endif %}</span>
+                            <strong class="text-primary">R$ {{ item.preco|floatformat:"2g" }}</strong>
+                        </li>
+                        {% endfor %}
+                        {% for item in itens_esgotados %}
+                        <li class="list-group-item px-0 d-flex justify-content-between text-secondary">
+                            <s>{{ item.nome }}</s><span class="badge text-bg-dark">Esgotado</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% if not evento.ja_passou %}
+                    <p class="small text-secondary mt-3 mb-0">Encomendas pelo site não estão abertas para este evento. Compre direto no local!</p>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

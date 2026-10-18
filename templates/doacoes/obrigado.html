@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Obrigado! - Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <i class="bi bi-check-circle-fill text-primary icone-status"></i>
+    <h1 class="mt-3">Muito obrigado pela sua doação!</h1>
+    {% if doacao and doacao.status == 'aprovado' %}
+    <p class="text-secondary col-md-6 mx-auto">
+        {{ doacao.nome_doador }}, sua doação de <strong>R$ {{ doacao.valor|floatformat:"2g" }}</strong> foi confirmada
+        {% if doacao.campanha %}para a vaquinha <a href="{% url 'doacoes:detalhe' doacao.campanha.slug %}">{{ doacao.campanha.titulo }}</a>{% endif %}.
+        Você acaba de ajudar a transformar a vida de um animal.
+    </p>
+    {% else %}
+    <p class="text-secondary col-md-6 mx-auto">Assim que o pagamento for confirmado pelo Mercado Pago, sua contribuição será somada à campanha. Você acaba de ajudar a transformar a vida de um animal.</p>
+    {% endif %}
+    <a href="{% url 'core:home' %}" class="btn btn-primary mt-3">Voltar ao início</a>
+</div>
+{% endblock %}

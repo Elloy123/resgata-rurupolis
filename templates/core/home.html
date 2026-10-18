@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resgata Rurópolis - Adoção e resgate de animais{% endblock %}
+
+{% block content %}
+<section class="hero py-5">
+    <div class="container py-4">
+        <div class="row align-items-center g-4 text-center text-lg-start">
+            <div class="col-lg-4 text-center">
+                <img src="{% static 'img/logo.png' %}" alt="Logo do Grupo de Protetores Resgata Rurópolis: Resgatar é um ato de amor"
+                     class="logo-hero" width="320" height="320">
+            </div>
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold">Cada resgate é uma nova chance de vida</h1>
+                <p class="lead">Adote, apadrinhe ou contribua com a Resgata Rurópolis e ajude a transformar a vida de cães e gatos em situação de vulnerabilidade em Rurópolis-PA.</p>
+                <div class="mt-4">
+                    <a href="{% url 'animais:lista' %}" class="btn btn-light btn-lg me-2 mb-2">Quero adotar</a>
+                    <a href="{% url 'doacoes:lista' %}" class="btn btn-outline-light btn-lg mb-2">Quero ajudar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if proximo_evento %}
+<section class="container pt-5">
+    <div class="faixa-evento rounded shadow-sm p-4 d-flex flex-column flex-md-row align-items-md-center gap-3">
+        <div class="selo-data selo-data-grande flex-shrink-0" aria-hidden="true">
+            <span class="dia">{{ proximo_evento.data|date:"d" }}</span>
+            <span class="mes">{{ proximo_evento.data|date:"M" }}</span>
+        </div>
+        <div class="flex-grow-1">
+            <span class="badge text-bg-danger mb-1">Próximo evento</span>
+            <h2 class="h4 mb-1">{{ proximo_evento.titulo }}</h2>
+            <p class="mb-0 text-secondary">
+                {{ proximo_evento.data|date:"l, d \d\e F"|capfirst }}{% if proximo_evento.hora_inicio %}, {{ proximo_evento.hora_inicio|time:"H\hi" }}{% endif %}{% if proximo_evento.local %} &middot; {{ proximo_evento.local }}{% endif %}
+            </p>
+        </div>
+        <a href="{% url 'eventos:detalhe' proximo_evento.slug %}" class="btn btn-primary btn-lg flex-shrink-0">
+            {% if proximo_evento.encomendas_abertas %}Encomendar{% else %}Saiba mais{% endif %}
+        </a>
+    </div>
+</section>
+{% endif %}
+
+<section class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 mb-0">Animais para adoção</h2>
+        <a href="{% url 'animais:lista' %}" class="btn btn-outline-primary btn-sm">Ver todos</a>
+    </div>
+    {% if animais_destaque %}
+    <div class="row g-4">
+        {% for animal in animais_destaque %}
+            {% url 'animais:detalhe' animal.slug as url_animal %}
+            {% include 'animais/_card.html' with url=url_animal texto_botao='Conhecer' %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-secondary">Nenhum animal cadastrado no momento. Volte em breve!</p>
+    {% endif %}
+</section>
+
+<section class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 mb-0">Vaquinhas ativas</h2>
+        <a href="{% url 'doacoes:lista' %}" class="btn btn-outline-primary btn-sm">Ver todas</a>
+    </div>
+    {% if campanhas_destaque %}
+    <div class="row g-4">
+        {% for campanha in campanhas_destaque %}
+            {% include 'doacoes/_card.html' %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-secondary">Nenhuma vaquinha ativa no momento.</p>
+    {% endif %}
+</section>
+
+<section class="bg-primary-subtle py-5">
+    <div class="container text-center">
+        <h2 class="h3">Apadrinhe um animal</h2>
+        <p class="text-secondary col-md-8 mx-auto">Com uma contribuição mensal, você garante alimentação, cuidados veterinários e um lar temporário até que o animal encontre uma família definitiva.</p>
+        <a href="{% url 'apadrinhamento:lista' %}" class="btn btn-primary btn-lg">Ver animais para apadrinhar</a>
+    </div>
+</section>
+{% endblock %}

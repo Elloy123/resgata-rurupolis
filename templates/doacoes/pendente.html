@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Pagamento pendente - Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <i class="bi bi-hourglass-split text-warning icone-status"></i>
+    <h1 class="mt-3">Pagamento em processamento</h1>
+    <p class="text-secondary col-md-6 mx-auto">Recebemos sua doação e estamos aguardando a confirmação do Mercado Pago. Isso pode levar alguns instantes (ex: boleto ou Pix).</p>
+    <a href="{% url 'core:home' %}" class="btn btn-primary mt-3">Voltar ao início</a>
+</div>
+{% endblock %}

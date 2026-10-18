@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Pedido {{ pedido.numero }} - Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="text-center">
+                <i class="bi bi-bag-check-fill text-primary icone-status"></i>
+                <h1 class="mt-3">Pedido {{ pedido.numero }} reservado!</h1>
+                <p class="text-secondary">Os produtos estão guardados em nome de {{ pedido.nome }}.</p>
+            </div>
+
+            <div class="card shadow-sm my-4">
+                <ul class="list-group list-group-flush">
+                    {% for item in pedido.itens.all %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ item.quantidade }}× {{ item.nome }}</span>
+                        <span>R$ {{ item.subtotal|floatformat:"2g" }}</span>
+                    </li>
+                    {% endfor %}
+                    <li class="list-group-item d-flex justify-content-between fs-5">
+                        <strong>Total</strong>
+                        <strong class="text-primary">R$ {{ pedido.total|floatformat:"2g" }}</strong>
+                    </li>
+                </ul>
+                {% if pedido.observacao %}
+                <div class="card-footer small text-secondary">Obs: {{ pedido.observacao }}</div>
+                {% endif %}
+            </div>
+
+            {% if pedido.status == 'pendente' %}
+            <p class="fw-semibold text-center">Último passo: envie o pedido para a ONG e combine o pagamento e a retirada.</p>
+            {% include '_botao_whatsapp.html' with mensagem=pedido.mensagem_whatsapp %}
+            {% elif pedido.status == 'concluido' %}
+            <div class="alert alert-success text-center">Pedido concluído. Muito obrigado por ajudar os animais!</div>
+            {% else %}
+            <div class="alert alert-secondary text-center">Este pedido foi cancelado.</div>
+            {% endif %}
+
+            <div class="text-center">
+                <a href="{% url 'bazar:lista' %}" class="btn btn-link mt-3">Voltar ao bazar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

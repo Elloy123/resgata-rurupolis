@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Fazer uma doação - Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h1 class="mb-4">Fazer uma doação geral</h1>
+            <p class="text-secondary">Sua contribuição ajuda a manter a alimentação, os cuidados veterinários e a estrutura da Resgata Rurópolis.</p>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="post" class="form-pagamento">
+                        {% csrf_token %}
+                        {% include '_form_campos.html' %}
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-heart-fill"></i> Doar com Mercado Pago
+                        </button>
+                    </form>
+                    {% include 'doacoes/_pix.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

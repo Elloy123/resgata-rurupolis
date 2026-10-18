@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Animais para adoção - Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Animais para adoção</h1>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-sm-3">
+            <select name="especie" class="form-select" aria-label="Filtrar por espécie" onchange="this.form.submit()">
+                <option value="">Espécie</option>
+                {% for valor, label in especie_choices %}
+                <option value="{{ valor }}" {% if valor == especie_selecionada %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <select name="porte" class="form-select" aria-label="Filtrar por porte" onchange="this.form.submit()">
+                <option value="">Porte</option>
+                {% for valor, label in porte_choices %}
+                <option value="{{ valor }}" {% if valor == porte_selecionado %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <select name="sexo" class="form-select" aria-label="Filtrar por sexo" onchange="this.form.submit()">
+                <option value="">Sexo</option>
+                {% for valor, label in sexo_choices %}
+                <option value="{{ valor }}" {% if valor == sexo_selecionado %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <a href="{% url 'animais:lista' %}" class="btn btn-outline-dark w-100">Limpar filtros</a>
+        </div>
+    </form>
+
+    {% if animais %}
+    <div class="row g-4">
+        {% for animal in animais %}
+            {% url 'animais:detalhe' animal.slug as url_animal %}
+            {% include 'animais/_card.html' with url=url_animal texto_botao='Conhecer' %}
+        {% endfor %}
+    </div>
+
+    {% if pagina.has_other_pages %}
+    <nav class="mt-5" aria-label="Paginação">
+        <ul class="pagination justify-content-center">
+            {% if pagina.has_previous %}
+            <li class="page-item"><a class="page-link" href="?{% if filtros_querystring %}{{ filtros_querystring }}&amp;{% endif %}pagina={{ pagina.previous_page_number }}">Anterior</a></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span></li>
+            {% if pagina.has_next %}
+            <li class="page-item"><a class="page-link" href="?{% if filtros_querystring %}{{ filtros_querystring }}&amp;{% endif %}pagina={{ pagina.next_page_number }}">Próxima</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    {% else %}
+    <p class="text-secondary">Nenhum animal encontrado com esses filtros.</p>
+    {% endif %}
+</div>
+{% endblock %}

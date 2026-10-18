@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ produto.nome }} - Bazar Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'bazar:lista' %}">Bazar</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ produto.nome }}</li>
+        </ol>
+    </nav>
+    <div class="row g-4">
+        <div class="col-lg-6">
+            {% if produto.foto %}
+            <img src="{{ produto.foto.url }}" class="img-fluid rounded shadow-sm w-100" alt="{{ produto.nome }}" id="foto-principal">
+            {% else %}
+            <img src="https://placehold.co/600x450?text={{ produto.nome|urlencode }}" class="img-fluid rounded shadow-sm w-100" alt="{{ produto.nome }} (sem foto)">
+            {% endif %}
+            {% if fotos_extras %}
+            <div class="row g-2 mt-2">
+                {% for foto in fotos_extras %}
+                <div class="col-3">
+                    <a href="{{ foto.imagem.url }}" target="_blank" rel="noopener">
+                        <img src="{{ foto.imagem.url }}" class="img-fluid rounded foto-extra" alt="Outra foto de {{ produto.nome }}" loading="lazy">
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-lg-6">
+            <h1>{{ produto.nome }}</h1>
+            <p class="display-6 fw-bold text-primary">R$ {{ produto.preco|floatformat:"2g" }}</p>
+            <ul class="list-unstyled text-secondary">
+                <li><strong>Categoria:</strong> {{ produto.get_categoria_display }}</li>
+                {% if produto.tamanho %}<li><strong>Tamanho:</strong> {{ produto.tamanho }}</li>{% endif %}
+                {% if produto.estado %}<li><strong>Estado:</strong> {{ produto.estado }}</li>{% endif %}
+                <li><strong>Disponível:</strong> {% if produto.esgotado %}<span class="text-danger">esgotado</span>{% elif produto.estoque == 1 %}peça única{% else %}{{ produto.estoque }} unidades{% endif %}</li>
+            </ul>
+            {% if produto.descricao %}<p style="white-space: pre-line;">{{ produto.descricao }}</p>{% endif %}
+
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    {% if produto.esgotado %}
+                    <div class="alert alert-secondary mb-0">
+                        <i class="bi bi-heart-fill text-danger"></i> Este produto <strong>esgotou</strong>. Obrigado a todos que compraram!
+                    </div>
+                    {% else %}
+                    <form method="post" action="{% url 'bazar:adicionar' produto.pk %}" class="d-flex gap-2 align-items-end flex-wrap">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        {% if produto.estoque > 1 %}
+                        <div>
+                            <label for="quantidade" class="form-label small mb-1">Quantidade</label>
+                            <input type="number" name="quantidade" id="quantidade" value="1" min="1" max="{{ produto.estoque }}" class="form-control text-center" style="width: 6rem;">
+                        </div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                            <i class="bi bi-cart-plus"></i> Adicionar ao carrinho
+                        </button>
+                    </form>
+                    {% if no_carrinho %}
+                    <p class="small mt-3 mb-0">
+                        <i class="bi bi-check-circle-fill text-primary"></i> Você tem {{ no_carrinho }} no carrinho.
+                        <a href="{% url 'bazar:carrinho' %}">Ver carrinho e finalizar</a>
+                    </p>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <a href="{% url 'bazar:lista' %}" class="btn btn-link px-0 mt-3"><i class="bi bi-arrow-left"></i> Continuar comprando</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

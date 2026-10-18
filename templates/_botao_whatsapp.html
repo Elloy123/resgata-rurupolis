@@ -1,0 +1,14 @@
+{% comment %}Botão que abre o WhatsApp da ONG com a mensagem pronta. Parâmetro: mensagem.{% endcomment %}
+{% load site_extras %}
+{% if sobre_ong.whatsapp_contato %}
+<a class="btn btn-primary btn-lg w-100" target="_blank" rel="noopener"
+   href="https://wa.me/{{ sobre_ong.whatsapp_contato|whatsapp_br }}?text={{ mensagem|urlencode }}">
+    <i class="bi bi-whatsapp"></i> Enviar pelo WhatsApp da ONG
+</a>
+<p class="small text-secondary mt-2 mb-0">A mensagem já vai pronta. É só tocar em enviar.</p>
+{% else %}
+<div class="alert alert-info mb-0">
+    Anotamos tudo! A Resgata Rurópolis vai entrar em contato pelo telefone informado.
+    {% if sobre_ong.telefone_contato %}Se preferir, ligue para <strong>{{ sobre_ong.telefone_contato }}</strong>.{% endif %}
+</div>
+{% endif %}

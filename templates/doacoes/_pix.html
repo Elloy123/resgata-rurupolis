@@ -1,0 +1,10 @@
+{% if sobre_ong.chave_pix %}
+<hr>
+<p class="small text-secondary mb-1">Prefere doar direto via PIX?</p>
+<div class="input-group input-group-sm">
+    <input type="text" class="form-control font-monospace" value="{{ sobre_ong.chave_pix }}" readonly aria-label="Chave PIX" id="chave-pix">
+    <button class="btn btn-outline-primary" type="button" data-copiar="#chave-pix">
+        <i class="bi bi-clipboard"></i> Copiar
+    </button>
+</div>
+{% endif %}

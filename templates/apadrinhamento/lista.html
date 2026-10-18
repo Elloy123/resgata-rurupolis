@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Apadrinhamento - Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-2">Apadrinhe um animal</h1>
+    <p class="text-secondary mb-4">Com uma contribuição mensal, você garante alimentação, cuidados veterinários e um lar temporário até que o animal encontre uma família definitiva.</p>
+
+    {% if animais %}
+    <div class="row g-4">
+        {% for animal in animais %}
+            {% url 'apadrinhamento:apadrinhar' animal.slug as url_animal %}
+            {% include 'animais/_card.html' with url=url_animal texto_botao='Apadrinhar' %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-secondary">Nenhum animal disponível para apadrinhamento no momento.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load site_extras %}
+
+{% block title %}{{ animal.nome }} - Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            {% if animal.foto %}
+            <img src="{{ animal.foto.url }}" class="img-fluid rounded shadow-sm" alt="{{ animal.nome }}">
+            {% else %}
+            <img src="https://placehold.co/600x450?text={{ animal.nome|urlencode }}" class="img-fluid rounded shadow-sm" alt="{{ animal.nome }}">
+            {% endif %}
+            {% if fotos_extras %}
+            <div class="row g-2 mt-2">
+                {% for foto in fotos_extras %}
+                <div class="col-4">
+                    <a href="{{ foto.imagem.url }}" target="_blank" rel="noopener">
+                        <img src="{{ foto.imagem.url }}" class="img-fluid rounded foto-extra" alt="Foto extra de {{ animal.nome }}" loading="lazy">
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-lg-6">
+            <h1>{{ animal.nome }}</h1>
+            <p class="text-secondary">
+                {{ animal.get_especie_display }}{% if animal.raca %} &middot; {{ animal.raca }}{% endif %} &middot; {{ animal.get_porte_display }} &middot; {{ animal.get_sexo_display }}
+                {% if animal.idade_aproximada %} &middot; {{ animal.idade_aproximada }}{% endif %}
+            </p>
+
+            <div class="mb-3">
+                {% if animal.status == 'disponivel' %}<span class="badge text-bg-primary">Disponível para adoção</span>{% endif %}
+                {% if animal.status == 'em_tratamento' %}<span class="badge text-bg-warning">Em tratamento</span>{% endif %}
+                {% if animal.status == 'adotado' %}<span class="badge text-bg-secondary">Já foi adotado</span>{% endif %}
+                {% if animal.vacinado %}<span class="badge text-bg-dark">Vacinado</span>{% endif %}
+                {% if animal.castrado %}<span class="badge text-bg-dark">Castrado</span>{% endif %}
+            </div>
+
+            {% if animal.descricao %}
+            <p class="fs-5" style="white-space: pre-line;">{{ animal.descricao }}</p>
+            {% endif %}
+
+            {% if animal.status != 'adotado' %}
+            <div class="d-grid gap-2 d-md-flex mt-4">
+                {% if sobre_ong.whatsapp_contato %}
+                <a class="btn btn-primary btn-lg" target="_blank" rel="noopener"
+                   href="https://wa.me/{{ sobre_ong.whatsapp_contato|whatsapp_br }}?text=Ol%C3%A1!%20Tenho%20interesse%20em%20adotar%20o(a)%20{{ animal.nome|urlencode }}">
+                    <i class="bi bi-whatsapp"></i> Quero adotar {{ animal.nome }}
+                </a>
+                {% endif %}
+                {% if animal.disponivel_para_apadrinhamento %}
+                <a class="btn btn-outline-primary btn-lg" href="{% url 'apadrinhamento:apadrinhar' animal.slug %}">
+                    Apadrinhar {{ animal.nome }}
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

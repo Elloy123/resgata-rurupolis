@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Bazar - Resgata Rurópolis{% endblock %}
+{% block description %}Bazar beneficente da Resgata Rurópolis: roupas, objetos e artesanato. Toda a renda vai para os animais.{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
+        <h1 class="mb-0"><i class="bi bi-bag-heart text-primary"></i> Bazar beneficente</h1>
+        <a href="{% url 'bazar:carrinho' %}" class="btn btn-outline-primary">
+            <i class="bi bi-cart3"></i> Meu carrinho{% if carrinho_qtd %} ({{ carrinho_qtd }}){% endif %}
+        </a>
+    </div>
+    <p class="text-secondary mb-4">Escolha os produtos, monte seu carrinho e finalize pelo WhatsApp da ONG. Toda a renda vai para ração, vacinas e tratamentos.</p>
+
+    <div class="d-flex flex-wrap gap-2 mb-4" role="group" aria-label="Filtrar por categoria">
+        <a href="{% url 'bazar:lista' %}" class="btn btn-sm {% if not categoria_selecionada %}btn-primary{% else %}btn-outline-primary{% endif %}">Todos</a>
+        {% for valor, label in categoria_choices %}
+        <a href="?categoria={{ valor }}" class="btn btn-sm {% if valor == categoria_selecionada %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
+
+    {% if produtos %}
+    <div class="row g-4">
+        {% for produto in produtos %}
+            {% include 'bazar/_card.html' %}
+        {% endfor %}
+    </div>
+
+    {% if pagina.has_other_pages %}
+    <nav class="mt-5" aria-label="Paginação">
+        <ul class="pagination justify-content-center">
+            {% if pagina.has_previous %}
+            <li class="page-item"><a class="page-link" href="?{% if filtros_querystring %}{{ filtros_querystring }}&amp;{% endif %}pagina={{ pagina.previous_page_number }}">Anterior</a></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span></li>
+            {% if pagina.has_next %}
+            <li class="page-item"><a class="page-link" href="?{% if filtros_querystring %}{{ filtros_querystring }}&amp;{% endif %}pagina={{ pagina.next_page_number }}">Próxima</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    {% else %}
+    <div class="text-center py-4">
+        <i class="bi bi-bag text-secondary icone-status"></i>
+        <p class="text-secondary mt-3">{% if categoria_selecionada %}Nenhum produto nesta categoria no momento.{% else %}O bazar está sem produtos no momento. Quer doar algo para o bazar? Fale com a gente!{% endif %}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

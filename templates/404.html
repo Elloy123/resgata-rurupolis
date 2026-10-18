@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Página não encontrada - Resgata Rurópolis{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <i class="bi bi-search text-secondary icone-status"></i>
+    <h1 class="mt-3">Página não encontrada</h1>
+    <p class="text-secondary col-md-6 mx-auto">O endereço que você procurou não existe ou foi removido. Talvez o animal já tenha encontrado um lar! 🐾</p>
+    <div class="d-flex gap-2 justify-content-center mt-3">
+        <a href="{% url 'core:home' %}" class="btn btn-primary">Voltar ao início</a>
+        <a href="{% url 'animais:lista' %}" class="btn btn-outline-primary">Ver animais para adoção</a>
+    </div>
+</div>
+{% endblock %}
