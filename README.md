@@ -82,6 +82,103 @@ após pagar) e o `notification_url` das doações.
 
 Erros de integração aparecem em `logs/site.log`.
 
+## Publicar no PythonAnywhere
+
+Nos comandos abaixo, troque `USUARIO` pelo seu nome de usuário do PythonAnywhere.
+
+### 1. Baixar o código (aba **Consoles → Bash**)
+
+```bash
+git clone https://github.com/Elloy123/resgata-rurupolis.git
+cd resgata-rurupolis
+ls /usr/bin/python3.1*          # veja as versões disponíveis (precisa ser 3.12 ou mais nova)
+python3.13 -m venv venv         # use a versão mais nova da lista
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Se o repositório for **privado**, o `git clone` pede usuário e senha. Use seu usuário do GitHub e,
+como senha, um *token* criado em GitHub → Settings → Developer settings → Personal access tokens.
+
+### 2. Criar o `.env` do servidor
+
+```bash
+python -c "from django.core.management.utils import get_random_secret_key as g; print(g())"   # copie a chave
+nano .env
+```
+
+```
+SECRET_KEY=<cole a chave gerada>
+DEBUG=False
+ALLOWED_HOSTS=USUARIO.pythonanywhere.com
+CSRF_TRUSTED_ORIGINS=https://USUARIO.pythonanywhere.com
+SITE_URL=https://USUARIO.pythonanywhere.com
+MERCADOPAGO_ACCESS_TOKEN=<seu token>
+MERCADOPAGO_PUBLIC_KEY=<sua public key>
+```
+
+(Para salvar no nano: Ctrl+O, Enter, Ctrl+X.)
+
+### 3. Banco de dados e arquivos estáticos
+
+```bash
+python manage.py migrate
+python manage.py collectstatic --noinput
+python manage.py createsuperuser
+```
+
+Para levar os dados do computador (animais, vaquinhas, telefones, usuário admin), em vez do
+`createsuperuser`, envie o `db.sqlite3` e a pasta `media/` pela aba **Files** para
+`/home/USUARIO/resgata-rurupolis/` e rode `python manage.py migrate` de novo.
+
+### 4. Criar o site (aba **Web**)
+
+1. **Add a new web app** → **Manual configuration** → mesma versão do Python do passo 1.
+2. **Virtualenv:** `/home/USUARIO/resgata-rurupolis/venv`
+3. **WSGI configuration file:** apague o conteúdo e cole:
+
+   ```python
+   import os
+   import sys
+
+   path = '/home/USUARIO/resgata-rurupolis'
+   if path not in sys.path:
+       sys.path.insert(0, path)
+
+   os.environ['DJANGO_SETTINGS_MODULE'] = 'resgata_rurupolis.settings'
+
+   from django.core.wsgi import get_wsgi_application
+   application = get_wsgi_application()
+   ```
+
+4. **Static files:**
+
+   | URL       | Directory                                     |
+   |-----------|-----------------------------------------------|
+   | `/static/` | `/home/USUARIO/resgata-rurupolis/staticfiles` |
+   | `/media/`  | `/home/USUARIO/resgata-rurupolis/media`       |
+
+5. Ative **Force HTTPS** e clique em **Reload**.
+
+Se der erro, o motivo aparece no **Error log** (link na aba Web) e em `logs/site.log`.
+
+### Atualizar o site depois de mudanças
+
+```bash
+cd ~/resgata-rurupolis
+source venv/bin/activate
+git pull
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py collectstatic --noinput
+```
+
+Depois clique em **Reload** na aba Web.
+
+**Conta gratuita:** o PythonAnywhere grátis só deixa o site acessar alguns sites externos.
+Se as doações derem erro de conexão com o Mercado Pago (veja o Error log), será preciso uma
+conta paga. Eventos e bazar funcionam normalmente, porque usam só o WhatsApp.
+
 ## Produção
 
 No `.env` do servidor:
